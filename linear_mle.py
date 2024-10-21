@@ -32,4 +32,4 @@ def compute_theta(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
 if __name__ == "__main__":
     X, Y = generate_data()
     theta = compute_theta(X, Y)
-    breakpoint()
+    values_close = np.allclose(EXPECTED_THETA, theta, atol=0.05)  # True
