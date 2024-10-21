@@ -23,7 +23,7 @@ def generate_data() -> None:
 
 def compute_theta(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     # computes the params using MLE
-    # θ = (XᵀX)^(-1)Xᵀy
+    # θ = (XᵀX)-¹Xᵀy
     X_transpose = np.transpose(X)
     theta = np.dot(np.linalg.inv(np.dot(X_transpose, X)), np.dot(X_transpose, Y))
     return theta
