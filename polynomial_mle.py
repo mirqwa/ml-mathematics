@@ -16,9 +16,24 @@ def generate_data() -> tuple[np.ndarray]:
     return X, Y
 
 
-def plot_data(X: np.ndarray, Y: np.ndarray) -> None:
+def compute_parameters_and_predict(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
+    # computes the params using MLE
+    # θ = (ΦᵀΦ)-¹Φᵀy
+    phi_x = np.array([[1, x, x**2, x**3, x**4] for x in X])
+    phi_x_transpose = np.transpose(phi_x)
+    theta = np.dot(np.linalg.inv(np.dot(phi_x_transpose, phi_x)), np.dot(phi_x_transpose, Y))
+    prediction = np.dot(phi_x, theta)
+    return prediction
+
+
+def plot_data(X: np.ndarray, Y: np.ndarray, prediction: np.ndarray) -> None:
     fig = plt.figure(figsize=(5, 3))
-    plt.scatter(X, Y, marker="x")
+    plt.scatter(X, Y, marker="+", label="Training data")
+    plt.plot(X, prediction, label="MLE", color="red")
+    plt.xlabel("$x$", fontsize=13)
+    plt.ylabel("$y$", fontsize=13)
+    plt.title("MLE for polynomial")
+    plt.legend(loc=1)
     fig.subplots_adjust(bottom=0.15)
     plt.savefig("polynomial_mle.png")
     plt.show()
@@ -26,4 +41,5 @@ def plot_data(X: np.ndarray, Y: np.ndarray) -> None:
 
 if __name__ == "__main__":
     X, Y = generate_data()
-    plot_data(X, Y)
+    prediction = compute_parameters_and_predict(X, Y)
+    plot_data(X, Y, prediction)
