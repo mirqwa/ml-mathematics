@@ -30,10 +30,10 @@ def get_polynomial_input(X: np.ndarray, degree: int) -> np.ndarray:
     return np.array([[x**d for d in range(degree + 1)] for x in X])
 
 
-def compute_parameters_and_predict(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
+def compute_parameters_and_predict(X: np.ndarray, Y: np.ndarray, degree: int) -> np.ndarray:
     # computes the params using MLE
     # θ = (ΦᵀΦ)-¹Φᵀy
-    phi_x = get_polynomial_input(X, 4)
+    phi_x = get_polynomial_input(X, degree)
     phi_x_transpose = np.transpose(phi_x)
     theta = np.dot(
         np.linalg.inv(np.dot(phi_x_transpose, phi_x)), np.dot(phi_x_transpose, Y)
@@ -48,12 +48,17 @@ def calculate_rmse(Y: np.ndarray, prediction: np.ndarray) -> np.ndarray:
     return math.sqrt(squared_distance.sum() / len(Y))
 
 
-if __name__ == "__main__":
+def main() -> None:
     train_data, test_data = generate_data()
     X, Y = train_data
     X_test, Y_test = test_data
-    theta, train_prediction = compute_parameters_and_predict(X, Y)
-    rmse = calculate_rmse(Y, np.dot(get_polynomial_input(X, 4), theta))
-    plot_data.plot_actual_and_predicted(
-        X, Y, train_prediction, "plots/polynomial_mle.png", "MLE for polynomial"
-    )
+    for degree in range(11):
+        theta, train_prediction = compute_parameters_and_predict(X, Y, degree)
+        rmse = calculate_rmse(Y, np.dot(get_polynomial_input(X, degree), theta))
+        plot_data.plot_actual_and_predicted(
+            X, Y, train_prediction, f"plots/polynomial_mle_{degree}.png", F"MLE for polynomial with D={degree}"
+        )
+
+
+if __name__ == "__main__":
+    main()

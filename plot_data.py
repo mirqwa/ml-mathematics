@@ -14,4 +14,4 @@ def plot_actual_and_predicted(
     plt.legend(loc=1)
     fig.subplots_adjust(bottom=0.15)
     plt.savefig(file_name)
-    plt.show()
+    #plt.show()
