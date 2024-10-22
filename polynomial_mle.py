@@ -11,36 +11,70 @@ np.random.seed(0)
 
 
 def generate_data() -> tuple[np.ndarray]:
-    X = np.linspace(-5, 5, num=100)
-    gaussian_noise = np.random.normal(0, 0.2, size=(100,))
+    X = np.array([-4.5, -2.5, -0.5, 0, 1, 1.5, 3.6, 4, 4.25, 4.75])
+    #X = np.linspace(-5, 5, num=10)
+    gaussian_noise = np.random.normal(0, 0.2, size=(X.shape[0],))
     Y = np.array([-math.sin(x / 5) + math.cos(x) for x in X]) + gaussian_noise
-    return X, Y
+
+    X_test = np.linspace(-5, 5, num=200)
+    X_test = X_test[~np.isin(X_test, X)]
+    test_gaussian_noise = np.random.normal(0, 0.2, size=(X_test.shape[0],))
+    Y_test = (
+        np.array([-math.sin(x / 5) + math.cos(x) for x in X_test]) + test_gaussian_noise
+    )
+    train_data = (X, Y)
+    test_data = (X_test, Y_test)
+    return train_data, test_data
 
 
-def compute_parameters_and_predict(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
+def get_polynomial_input(X: np.ndarray, degree: int) -> np.ndarray:
+    return np.array([[x**d for d in range(degree + 1)] for x in X])
+
+
+def compute_parameters_and_predict(
+    X: np.ndarray, Y: np.ndarray, degree: int
+) -> np.ndarray:
     # computes the params using MLE
     # θ = (ΦᵀΦ)-¹Φᵀy
-    phi_x = np.array([[1, x, x**2, x**3, x**4] for x in X])
+    phi_x = get_polynomial_input(X, degree)
     phi_x_transpose = np.transpose(phi_x)
     theta = np.dot(
         np.linalg.inv(np.dot(phi_x_transpose, phi_x)), np.dot(phi_x_transpose, Y)
     )
     prediction = np.dot(phi_x, theta)
-    return prediction
+    return theta, prediction
 
 
-def get_noise_variance_estimation(Y: np.ndarray, prediction: np.ndarray) -> np.ndarray:
-    # computes the variance of the noise
-    # given by the empirical mean of the squared distance between the noisy
-    # observation and the noise-free function
+def calculate_rmse(Y: np.ndarray, prediction: np.ndarray) -> np.ndarray:
+    # computes the rmse between the actual and the predicted values
     squared_distance = (Y - prediction) ** 2
-    noise_variance = squared_distance.sum() / len(Y)
+    return math.sqrt(squared_distance.sum() / len(Y))
+
+
+def main() -> None:
+    train_data, test_data = generate_data()
+    X, Y = train_data
+    X_test, Y_test = test_data
+    train_rmse = []
+    test_rmse = []
+    for degree in range(10):
+        theta, train_prediction = compute_parameters_and_predict(X, Y, degree)
+        train_rmse.append(
+            calculate_rmse(Y, np.dot(get_polynomial_input(X, degree), theta))
+        )
+        test_rmse.append(
+            calculate_rmse(Y_test, np.dot(get_polynomial_input(X_test, degree), theta))
+        )
+        plot_data.plot_actual_and_predicted(
+            X,
+            Y,
+            train_prediction,
+            f"plots/polynomial_mle_{degree}.png",
+            f"MLE for polynomial with D={degree}",
+        )
+    
+    plot_data.plot_rmse(train_rmse, test_rmse)
 
 
 if __name__ == "__main__":
-    X, Y = generate_data()
-    prediction = compute_parameters_and_predict(X, Y)
-    get_noise_variance_estimation(Y, prediction)
-    plot_data.plot_actual_and_predicted(
-        X, Y, prediction, "plots/polynomial_mle.png", "MLE for polynomial"
-    )
+    main()
