@@ -11,11 +11,12 @@ np.random.seed(0)
 
 
 def generate_data() -> tuple[np.ndarray]:
-    X = np.linspace(-5, 5, num=10)
-    gaussian_noise = np.random.normal(0, 0.2, size=(10,))
+    X = np.array([-4.5, -2.5, -0.5, 0, 1, 1.5, 3.6, 4, 4.25, 4.75])
+    #X = np.linspace(-5, 5, num=10)
+    gaussian_noise = np.random.normal(0, 0.2, size=(X.shape[0],))
     Y = np.array([-math.sin(x / 5) + math.cos(x) for x in X]) + gaussian_noise
 
-    X_test = np.linspace(-5, 5, num=100)
+    X_test = np.linspace(-5, 5, num=200)
     X_test = X_test[~np.isin(X_test, X)]
     test_gaussian_noise = np.random.normal(0, 0.2, size=(X_test.shape[0],))
     Y_test = (
@@ -54,14 +55,14 @@ def main() -> None:
     train_data, test_data = generate_data()
     X, Y = train_data
     X_test, Y_test = test_data
-    rmse_train = []
-    rmse_test = []
-    for degree in range(11):
+    train_rmse = []
+    test_rmse = []
+    for degree in range(10):
         theta, train_prediction = compute_parameters_and_predict(X, Y, degree)
-        rmse_train.append(
+        train_rmse.append(
             calculate_rmse(Y, np.dot(get_polynomial_input(X, degree), theta))
         )
-        rmse_test.append(
+        test_rmse.append(
             calculate_rmse(Y_test, np.dot(get_polynomial_input(X_test, degree), theta))
         )
         plot_data.plot_actual_and_predicted(
@@ -71,6 +72,8 @@ def main() -> None:
             f"plots/polynomial_mle_{degree}.png",
             f"MLE for polynomial with D={degree}",
         )
+    
+    plot_data.plot_rmse(train_rmse, test_rmse)
 
 
 if __name__ == "__main__":

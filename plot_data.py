@@ -19,3 +19,23 @@ def plot_actual_and_predicted(
     plt.legend(loc=1)
     fig.subplots_adjust(bottom=0.15)
     plt.savefig(file_name)
+
+
+def plot_rmse(train_rmse: list, test_rmse: list) -> None:
+    fig = plt.figure(figsize=(12, 5))
+    X = range(0, len(train_rmse))
+
+    # training RMSE plot
+    plt.plot(X, train_rmse, label="Training Error", color="green")
+
+    # test RMSE plot
+    plt.plot(X, test_rmse, label="Test Error", color="red")
+
+    plt.xlim([0, 10])
+    plt.ylim([0, 20])
+    plt.xlabel("Degree of Polynomial", fontsize=13)
+    plt.ylabel("RMSE", fontsize=13)
+    plt.title("RMSE with polynomial degree")
+    plt.legend(loc=1)
+    fig.subplots_adjust(bottom=0.15)
+    plt.savefig("plots/rmse.png")
