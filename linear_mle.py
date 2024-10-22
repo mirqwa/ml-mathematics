@@ -26,10 +26,20 @@ def compute_theta(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     # θ = (XᵀX)-¹Xᵀy
     X_transpose = np.transpose(X)
     theta = np.dot(np.linalg.inv(np.dot(X_transpose, X)), np.dot(X_transpose, Y))
-    return theta
+    values_close = np.allclose(EXPECTED_THETA, theta, atol=0.05)  # True
+    prediction = np.dot(X, theta)
+    return prediction
+
+
+def get_noise_variance_estimation(Y: np.ndarray, prediction: np.ndarray) -> np.ndarray:
+    # computes the variance of the noise
+    # given by the empirical mean of the squared distance between the noisy
+    # observation and the noise-free function
+    squared_distance = (Y - prediction) ** 2
+    noise_variance = squared_distance.sum() / len(Y)
 
 
 if __name__ == "__main__":
     X, Y = generate_data()
-    theta = compute_theta(X, Y)
-    values_close = np.allclose(EXPECTED_THETA, theta, atol=0.05)  # True
+    prediction = compute_theta(X, Y)
+    get_noise_variance_estimation(Y, prediction)
