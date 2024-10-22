@@ -26,6 +26,14 @@ def compute_parameters_and_predict(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     return prediction
 
 
+def get_noise_variance_estimation(Y: np.ndarray, prediction: np.ndarray) -> np.ndarray:
+    # computes the variance of the noise
+    # given by the empirical mean of the squared distance between the noisy
+    # observation and the noise-free function
+    squared_distance = (Y - prediction) ** 2
+    noise_variance = squared_distance.sum() / len(Y)
+
+
 def plot_data(X: np.ndarray, Y: np.ndarray, prediction: np.ndarray) -> None:
     fig = plt.figure(figsize=(5, 3))
     plt.scatter(X, Y, marker="+", label="Training data")
@@ -42,4 +50,5 @@ def plot_data(X: np.ndarray, Y: np.ndarray, prediction: np.ndarray) -> None:
 if __name__ == "__main__":
     X, Y = generate_data()
     prediction = compute_parameters_and_predict(X, Y)
+    get_noise_variance_estimation(Y, prediction)
     plot_data(X, Y, prediction)
