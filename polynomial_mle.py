@@ -3,7 +3,6 @@
 # yₙ = − sin(xₙ / 5) + cos(xₙ) + ϵ, ϵ∼(N|0,σ²) for σ=0.2
 import math
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 import plot_data

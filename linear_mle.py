@@ -37,7 +37,6 @@ def get_noise_variance_estimation(Y: np.ndarray, prediction: np.ndarray) -> np.n
     # observation and the noise-free function
     squared_distance = (Y - prediction) ** 2
     noise_variance = squared_distance.sum() / len(Y)
-    breakpoint()
 
 
 if __name__ == "__main__":
