@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.interpolate import make_interp_spline, BSpline
 
 
 def plot_actual_and_predicted(
@@ -7,7 +8,11 @@ def plot_actual_and_predicted(
 ) -> None:
     fig = plt.figure(figsize=(5, 3))
     plt.scatter(X, Y, marker="+", label="Training data")
-    plt.plot(X, prediction, label="MLE", color="red")
+    X_new = np.linspace(X.min(), X.max(), 300)
+    spl = make_interp_spline(X, prediction, k=3)  # type: BSpline
+    prediction_smooth = spl(X_new)
+    plt.plot(X_new, prediction_smooth, label="MLE", color="red")
+    plt.xlim([-5, 5])
     plt.xlabel("$x$", fontsize=13)
     plt.ylabel("$y$", fontsize=13)
     plt.title(title)
