@@ -11,10 +11,16 @@ np.random.seed(0)
 
 
 def generate_data() -> tuple[np.ndarray]:
-    X = np.linspace(-5, 5, num=100)
-    gaussian_noise = np.random.normal(0, 0.2, size=(100,))
+    X = np.linspace(-5, 5, num=300)
+    gaussian_noise = np.random.normal(0, 0.2, size=(300,))
     Y = np.array([-math.sin(x / 5) + math.cos(x) for x in X]) + gaussian_noise
-    return X, Y
+    indices = np.random.permutation(X.shape[0])
+    training_idx, test_idx = indices[:int(X.shape[0] * (2 / 3))], indices[int(X.shape[0] * (2 / 3)):]
+    training_idx.sort()
+    test_idx.sort()
+    train_data = (X[training_idx], Y[training_idx])
+    test_data = (X[test_idx], Y[test_idx])
+    return train_data, test_data
 
 
 def compute_parameters_and_predict(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
@@ -38,7 +44,9 @@ def get_noise_variance_estimation(Y: np.ndarray, prediction: np.ndarray) -> np.n
 
 
 if __name__ == "__main__":
-    X, Y = generate_data()
+    train_data, test_data = generate_data()
+    X, Y = train_data
+    X_test, Y_test = test_data
     prediction = compute_parameters_and_predict(X, Y)
     get_noise_variance_estimation(Y, prediction)
     plot_data.plot_actual_and_predicted(
