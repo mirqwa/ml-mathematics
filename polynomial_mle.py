@@ -15,7 +15,10 @@ def generate_data() -> tuple[np.ndarray]:
     gaussian_noise = np.random.normal(0, 0.2, size=(300,))
     Y = np.array([-math.sin(x / 5) + math.cos(x) for x in X]) + gaussian_noise
     indices = np.random.permutation(X.shape[0])
-    training_idx, test_idx = indices[:int(X.shape[0] * (2 / 3))], indices[int(X.shape[0] * (2 / 3)):]
+    training_idx, test_idx = (
+        indices[: int(X.shape[0] * (2 / 3))],
+        indices[int(X.shape[0] * (2 / 3)) :],
+    )
     training_idx.sort()
     test_idx.sort()
     train_data = (X[training_idx], Y[training_idx])
@@ -23,32 +26,34 @@ def generate_data() -> tuple[np.ndarray]:
     return train_data, test_data
 
 
+def get_polynomial_input(X: np.ndarray, degree: int) -> np.ndarray:
+    return np.array([[x**d for d in range(degree + 1)] for x in X])
+
+
 def compute_parameters_and_predict(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     # computes the params using MLE
     # θ = (ΦᵀΦ)-¹Φᵀy
-    phi_x = np.array([[1, x, x**2, x**3, x**4] for x in X])
+    phi_x = get_polynomial_input(X, 4)
     phi_x_transpose = np.transpose(phi_x)
     theta = np.dot(
         np.linalg.inv(np.dot(phi_x_transpose, phi_x)), np.dot(phi_x_transpose, Y)
     )
     prediction = np.dot(phi_x, theta)
-    return prediction
+    return theta, prediction
 
 
-def get_noise_variance_estimation(Y: np.ndarray, prediction: np.ndarray) -> np.ndarray:
-    # computes the variance of the noise
-    # given by the empirical mean of the squared distance between the noisy
-    # observation and the noise-free function
+def calculate_rmse(Y: np.ndarray, prediction: np.ndarray) -> np.ndarray:
+    # computes the rmse between the actual and the predicted values
     squared_distance = (Y - prediction) ** 2
-    noise_variance = squared_distance.sum() / len(Y)
+    return math.sqrt(squared_distance.sum() / len(Y))
 
 
 if __name__ == "__main__":
     train_data, test_data = generate_data()
     X, Y = train_data
     X_test, Y_test = test_data
-    prediction = compute_parameters_and_predict(X, Y)
-    get_noise_variance_estimation(Y, prediction)
+    theta, train_prediction = compute_parameters_and_predict(X, Y)
+    rmse = calculate_rmse(Y, np.dot(get_polynomial_input(X, 4), theta))
     plot_data.plot_actual_and_predicted(
-        X, Y, prediction, "plots/polynomial_mle.png", "MLE for polynomial"
+        X, Y, train_prediction, "plots/polynomial_mle.png", "MLE for polynomial"
     )
