@@ -14,6 +14,13 @@ def plot_binomial_distributions(probability_distibutions: dict) -> None:
             color=probability_distibution["color"],
             alpha=0.3,
         )
+        ax.scatter(
+            probability_distibution["x"],
+            probability_distibution["y_computed"],
+            marker="x",
+            label=f"µ = {mu} computed",
+            s=100
+        )
 
     ax.grid(axis="y", linestyle="--", alpha=0.7, zorder=0)
 
