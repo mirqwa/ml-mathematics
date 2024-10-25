@@ -35,6 +35,31 @@ def plot_binomial_distributions(probability_distibutions: dict) -> None:
     plt.savefig("plots/binomial.png")
 
 
+def plot_poisson(poisson_distibutions: dict) -> None:
+    fig, ax = plt.subplots(figsize=(20, 10))
+
+    for _lambda, poisson_distibution in poisson_distibutions.items():
+        ax.bar(
+            poisson_distibution["x"],
+            poisson_distibution["y"],
+            label=f"λ = {_lambda}",
+            color=poisson_distibution["color"],
+            alpha=0.3,
+        )
+
+    ax.grid(axis="x", linestyle="--", alpha=0.7, zorder=0)
+    ax.grid(axis="y", linestyle="--", alpha=0.7, zorder=0)
+
+    plt.xlim([-1, 21])
+    plt.ylim([0, 0.5])
+    plt.xlabel("x", fontsize=20)
+    plt.ylabel("pmf", fontsize=20)
+    plt.title("Poisson distribution")
+    plt.legend(loc=1)
+    fig.subplots_adjust(bottom=0.15)
+    plt.savefig("plots/poisson.png")
+
+
 def plot_exponential(
     prob_densities: dict, title: str, ylable: str, y_lim: tuple, filename: str
 ) -> None:
