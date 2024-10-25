@@ -60,32 +60,40 @@ def plot_poisson(poisson_distibutions: dict) -> None:
     plt.savefig("plots/poisson.png")
 
 
-def plot_exponential(
-    prob_densities: dict, title: str, ylable: str, y_lim: tuple, filename: str
+def plot_lines(
+    prob_densities: dict,
+    title: str,
+    xlable: str,
+    ylable: str,
+    x_lim: tuple,
+    y_lim: tuple,
+    filename: str,
+    smooth_lines=True,
 ) -> None:
     fig, ax = plt.subplots(figsize=(20, 10))
 
-    for mu, prob_density in prob_densities.items():
-        x = np.linspace(prob_density["x"].min(), prob_density["x"].max(), 300)
-        spl = make_interp_spline(
-            prob_density["x"], prob_density["y"], k=3
-        )  # type: BSpline
-        y = spl(x)
+    for prob_density in prob_densities.values():
+        if smooth_lines:
+            x = np.linspace(prob_density["x"].min(), prob_density["x"].max(), 300)
+            spl = make_interp_spline(
+                prob_density["x"], prob_density["y"], k=3
+            )  # type: BSpline
+            y = spl(x)
+        else:
+            x = prob_density["x"]
+            y = prob_density["y"]
         ax.plot(
-            x,
-            y,
-            label=f"λ = {1 / mu}",
-            color=prob_density["color"],
+            x, y, label=prob_density["label"], color=prob_density["color"], linewidth=3
         )
 
     ax.grid(axis="x", linestyle="--", alpha=0.7, zorder=0)
     ax.grid(axis="y", linestyle="--", alpha=0.7, zorder=0)
 
-    plt.xlim([-1, 21])
+    plt.xlim(x_lim)
     plt.ylim(y_lim)
-    plt.xlabel("x", fontsize=20)
+    plt.xlabel(xlable, fontsize=20)
     plt.ylabel(ylable, fontsize=20)
-    plt.title(title)
+    plt.title(title, fontsize=25)
     plt.legend(loc=1)
     fig.subplots_adjust(bottom=0.15)
     plt.savefig(f"plots/{filename}")
