@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.interpolate import make_interp_spline, BSpline
 
 
 def plot_binomial_distributions(probability_distibutions: dict) -> None:
@@ -40,9 +41,14 @@ def plot_exponential(
     fig, ax = plt.subplots(figsize=(20, 10))
 
     for mu, prob_density in prob_densities.items():
+        x = np.linspace(prob_density["x"].min(), prob_density["x"].max(), 300)
+        spl = make_interp_spline(
+            prob_density["x"], prob_density["y"], k=3
+        )  # type: BSpline
+        y = spl(x)
         ax.plot(
-            prob_density["x"],
-            prob_density["y"],
+            x,
+            y,
             label=f"µ = {mu}",
             color=prob_density["color"],
         )
