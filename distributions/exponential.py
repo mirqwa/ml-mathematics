@@ -17,19 +17,33 @@ if __name__ == "__main__":
     distribution_means = {0.5: "blue", 1: "red", 5: "green"}
     for mu, color in distribution_means.items():
         X, prob_density, cum_prob = get_density_and_cumulative(mu)
-        prob_densities[mu] = {"x": X, "y": prob_density, "color": color}
-        cum_probs[mu] = {"x": X, "y": cum_prob, "color": color}
-    plot.plot_exponential(
+        prob_densities[mu] = {
+            "x": X,
+            "y": prob_density,
+            "label": f"λ = {1 / mu}",
+            "color": color,
+        }
+        cum_probs[mu] = {
+            "x": X,
+            "y": cum_prob,
+            "label": f"λ = {1 / mu}",
+            "color": color,
+        }
+    plot.plot_lines(
         prob_densities,
         "PDF for exponential distribution",
+        "x",
         "pdf",
+        (-1, 21),
         (0, 2.2),
         "exponential_pdf.png",
     )
-    plot.plot_exponential(
+    plot.plot_lines(
         cum_probs,
         "CDF for exponential distribution",
+        "x",
         "cdf",
+        (-1, 21),
         (0, 1.2),
         "exponential_cdf.png",
     )
