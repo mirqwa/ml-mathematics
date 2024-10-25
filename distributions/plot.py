@@ -19,7 +19,7 @@ def plot_binomial_distributions(probability_distibutions: dict) -> None:
             probability_distibution["y_computed"],
             marker="x",
             label=f"µ = {mu} computed",
-            s=100
+            s=100,
         )
 
     ax.grid(axis="y", linestyle="--", alpha=0.7, zorder=0)
@@ -32,3 +32,23 @@ def plot_binomial_distributions(probability_distibutions: dict) -> None:
     plt.legend(loc=1)
     fig.subplots_adjust(bottom=0.15)
     plt.savefig("plots/binomial.png")
+
+
+def plot_exponential(
+    X: np.ndarray, prob_density: np.ndarray, title: str, ylable: str, filename: str
+) -> None:
+    fig, ax = plt.subplots(figsize=(20, 10))
+
+    ax.plot(X, prob_density, label="Training Error", color="green")
+
+    ax.grid(axis="x", linestyle="--", alpha=0.7, zorder=0)
+    ax.grid(axis="y", linestyle="--", alpha=0.7, zorder=0)
+
+    plt.xlim([-1, 21])
+    plt.ylim([0, 1.2])
+    plt.xlabel("x", fontsize=20)
+    plt.ylabel(ylable, fontsize=20)
+    plt.title(title)
+    plt.legend(loc=1)
+    fig.subplots_adjust(bottom=0.15)
+    plt.savefig(f"plots/{filename}")
