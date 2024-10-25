@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.interpolate import make_interp_spline, BSpline
 
 
 def plot_binomial_distributions(probability_distibutions: dict) -> None:
@@ -19,7 +20,7 @@ def plot_binomial_distributions(probability_distibutions: dict) -> None:
             probability_distibution["y_computed"],
             marker="x",
             label=f"µ = {mu} computed",
-            s=100
+            s=100,
         )
 
     ax.grid(axis="y", linestyle="--", alpha=0.7, zorder=0)
@@ -32,3 +33,34 @@ def plot_binomial_distributions(probability_distibutions: dict) -> None:
     plt.legend(loc=1)
     fig.subplots_adjust(bottom=0.15)
     plt.savefig("plots/binomial.png")
+
+
+def plot_exponential(
+    prob_densities: dict, title: str, ylable: str, y_lim: tuple, filename: str
+) -> None:
+    fig, ax = plt.subplots(figsize=(20, 10))
+
+    for mu, prob_density in prob_densities.items():
+        x = np.linspace(prob_density["x"].min(), prob_density["x"].max(), 300)
+        spl = make_interp_spline(
+            prob_density["x"], prob_density["y"], k=3
+        )  # type: BSpline
+        y = spl(x)
+        ax.plot(
+            x,
+            y,
+            label=f"λ = {1 / mu}",
+            color=prob_density["color"],
+        )
+
+    ax.grid(axis="x", linestyle="--", alpha=0.7, zorder=0)
+    ax.grid(axis="y", linestyle="--", alpha=0.7, zorder=0)
+
+    plt.xlim([-1, 21])
+    plt.ylim(y_lim)
+    plt.xlabel("x", fontsize=20)
+    plt.ylabel(ylable, fontsize=20)
+    plt.title(title)
+    plt.legend(loc=1)
+    fig.subplots_adjust(bottom=0.15)
+    plt.savefig(f"plots/{filename}")
