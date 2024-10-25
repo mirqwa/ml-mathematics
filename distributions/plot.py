@@ -35,17 +35,23 @@ def plot_binomial_distributions(probability_distibutions: dict) -> None:
 
 
 def plot_exponential(
-    X: np.ndarray, prob_density: np.ndarray, title: str, ylable: str, filename: str
+    prob_densities: dict, title: str, ylable: str, filename: str
 ) -> None:
     fig, ax = plt.subplots(figsize=(20, 10))
 
-    ax.plot(X, prob_density, label="Training Error", color="green")
+    for mu, prob_density in prob_densities.items():
+        ax.plot(
+            prob_density["x"],
+            prob_density["y"],
+            label=f"µ = {mu}",
+            color=prob_density["color"],
+        )
 
     ax.grid(axis="x", linestyle="--", alpha=0.7, zorder=0)
     ax.grid(axis="y", linestyle="--", alpha=0.7, zorder=0)
 
     plt.xlim([-1, 21])
-    plt.ylim([0, 1.2])
+    plt.ylim([0, 2.2])
     plt.xlabel("x", fontsize=20)
     plt.ylabel(ylable, fontsize=20)
     plt.title(title)

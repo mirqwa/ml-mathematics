@@ -12,7 +12,12 @@ def get_density_and_cumulative(mu: float) -> list[np.ndarray]:
 
 
 if __name__ == "__main__":
-    X, prob_density, cum_prob = get_density_and_cumulative(1)
+    prob_densities = {}
+    cum_probs = {}
+    distribution_means = {0.5: "blue", 1: "red", 5: "green"}
+    for mu, color in distribution_means.items():
+        X, prob_density, cum_prob = get_density_and_cumulative(mu)
+        prob_densities[mu] = {"x": X, "y": prob_density, "color": color}
     plot.plot_exponential(
-        X, prob_density, "Exponential distribution", "pdf", "exponential_pdf.png"
+        prob_densities, "Exponential distribution", "pdf", "exponential_pdf.png"
     )
