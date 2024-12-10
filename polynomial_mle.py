@@ -12,7 +12,7 @@ np.random.seed(0)
 
 def generate_data() -> tuple[np.ndarray]:
     X = np.array([-4.5, -2.5, -0.5, 0, 1, 1.5, 3.6, 4, 4.25, 4.75])
-    #X = np.linspace(-5, 5, num=10)
+    # X = np.linspace(-5, 5, num=10)
     gaussian_noise = np.random.normal(0, 0.2, size=(X.shape[0],))
     Y = np.array([-math.sin(x / 5) + math.cos(x) for x in X]) + gaussian_noise
 
@@ -31,6 +31,12 @@ def get_polynomial_input(X: np.ndarray, degree: int) -> np.ndarray:
     return np.array([[x**d for d in range(degree + 1)] for x in X])
 
 
+def get_noise_variance_estimation(Y: np.ndarray, prediction: np.ndarray) -> float:
+    squared_distance = (Y - prediction) ** 2
+    noise_variance = squared_distance.sum() / len(Y)
+    return noise_variance
+
+
 def compute_parameters_and_predict(
     X: np.ndarray, Y: np.ndarray, degree: int
 ) -> np.ndarray:
@@ -42,7 +48,8 @@ def compute_parameters_and_predict(
         np.linalg.inv(np.dot(phi_x_transpose, phi_x)), np.dot(phi_x_transpose, Y)
     )
     prediction = np.dot(phi_x, theta)
-    return theta, prediction
+    noise_variance = get_noise_variance_estimation(Y, prediction)
+    return theta, prediction, noise_variance
 
 
 def calculate_rmse(Y: np.ndarray, prediction: np.ndarray) -> np.ndarray:
@@ -58,7 +65,10 @@ def main() -> None:
     train_rmse = []
     test_rmse = []
     for degree in range(10):
-        theta, train_prediction = compute_parameters_and_predict(X, Y, degree)
+        theta, train_prediction, noise_variance = compute_parameters_and_predict(
+            X, Y, degree
+        )
+        print(f"The estimated noise variance for degree={degree}:", noise_variance)
         train_rmse.append(
             calculate_rmse(Y, np.dot(get_polynomial_input(X, degree), theta))
         )
@@ -72,7 +82,7 @@ def main() -> None:
             f"plots/polynomial_mle_{degree}.png",
             f"MLE for polynomial with D={degree}",
         )
-    
+
     plot_data.plot_rmse(train_rmse, test_rmse)
 
 
